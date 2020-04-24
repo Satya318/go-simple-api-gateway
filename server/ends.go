@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/Soontao/go-simple-api-gateway/key"
-	"github.com/ipfans/echo-session"
+	"go-simple-api-gateway/key"
+
+	session "github.com/ipfans/echo-session"
 	"github.com/labstack/echo"
 )
 
@@ -17,10 +18,10 @@ func (s *GatewayServer) userAuth(c echo.Context) (err error) {
 		sess.Set(key.KEY_Username, user.Username)
 		sess.Save()
 		return c.JSON(http.StatusOK, &DataMessage{http.StatusOK, fmt.Sprintf("auth for %s", user.Username)})
-	} else {
-		return c.JSON(http.StatusForbidden, &DataMessage{http.StatusForbidden, "auth failed"})
 	}
-	return
+
+	return c.JSON(http.StatusForbidden, &DataMessage{http.StatusForbidden, "auth failed"})
+
 }
 
 func (s *GatewayServer) userRegister(c echo.Context) (err error) {
@@ -29,10 +30,9 @@ func (s *GatewayServer) userRegister(c echo.Context) (err error) {
 	if err := s.authUserService.SaveUser(user.Username, user.Password); err == nil {
 		s.AddRoleForUser(user.Username, s.DefaultRegisterRole)
 		return c.JSON(http.StatusOK, &DataMessage{http.StatusOK, fmt.Sprintf("register for %s", user.Username)})
-	} else {
-		return c.JSON(http.StatusBadRequest, &DataMessage{http.StatusBadRequest, err.Error()})
 	}
-	return
+	return c.JSON(http.StatusBadRequest, &DataMessage{http.StatusBadRequest, err.Error()})
+
 }
 
 func (s *GatewayServer) userUpdate(c echo.Context) (err error) {
@@ -40,11 +40,9 @@ func (s *GatewayServer) userUpdate(c echo.Context) (err error) {
 	c.Bind(user)
 	if s.authUserService.UpdatePassword(user.Username, user.Password, user.NewPassword) {
 		return c.JSON(http.StatusOK, &DataMessage{http.StatusOK, fmt.Sprintf("password updated for %s", user.Username)})
-	} else {
+	} 
 		return c.JSON(http.StatusBadRequest, &DataMessage{http.StatusBadRequest, "password update failed"})
-	}
-
-	return
+	
 }
 
 func (s *GatewayServer) enforceAuth(c echo.Context) (err error) {
@@ -121,7 +119,7 @@ func (s *GatewayServer) getUserRoles(c echo.Context) (err error) {
 	if err = c.Bind(ur); err != nil {
 		return
 	}
-	data := s.GetRolesForUser(ur.User)
+	data, _ := s.GetRolesForUser(ur.User)
 	return c.JSON(http.StatusOK, &DataMessage{http.StatusOK, data})
 }
 
@@ -130,7 +128,7 @@ func (s *GatewayServer) getRoleUsers(c echo.Context) (err error) {
 	if err = c.Bind(ur); err != nil {
 		return
 	}
-	data := s.GetUsersForRole(ur.Role)
+	data, _ := s.GetUsersForRole(ur.Role)
 	return c.JSON(http.StatusOK, &DataMessage{http.StatusOK, data})
 }
 

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/Soontao/go-simple-api-gateway/server"
+	"go-simple-api-gateway/server"
 	"github.com/mkideal/cli"
 )
 

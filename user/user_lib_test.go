@@ -3,7 +3,7 @@ package user
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/Soontao/go-simple-api-gateway/types"
+	"go-simple-api-gateway/types"
 	"testing"
 )
 

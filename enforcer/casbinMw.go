@@ -27,7 +27,7 @@
 package enforcer
 
 import (
-	"github.com/Soontao/go-simple-api-gateway/key"
+	"go-simple-api-gateway/key"
 	"github.com/casbin/casbin"
 	"github.com/ipfans/echo-session"
 	"github.com/labstack/echo"

@@ -3,15 +3,17 @@ package server
 import (
 	"net/url"
 
-	"github.com/Soontao/go-simple-api-gateway/enforcer"
-	"github.com/Soontao/go-simple-api-gateway/key"
-	"github.com/Soontao/go-simple-api-gateway/user"
+	"go-simple-api-gateway/enforcer"
+	"go-simple-api-gateway/key"
+	"go-simple-api-gateway/user"
+
 	"github.com/casbin/casbin"
-	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/go-sql-driver/mysql" //Comment to remove warning
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 )
 
+//GatewayServer struct
 type GatewayServer struct {
 	*echo.Echo                            // web service
 	*casbin.Enforcer                      // authorization service
@@ -52,13 +54,13 @@ func NewGatewayServer(connStr string, resourceHostStr string, defaultRole ...str
 }
 
 func (s *GatewayServer) mountReverseProxy() {
-	s.Group("/").Use(s.BasicAuthSessionMw, enforcer.Middleware(s.Enforcer), middleware.Proxy(&middleware.RoundRobinBalancer{
-		Targets: []*middleware.ProxyTarget{
+	s.Group("/").Use(s.BasicAuthSessionMw, enforcer.Middleware(s.Enforcer), middleware.Proxy(middleware.NewRoundRobinBalancer(
+		[]*middleware.ProxyTarget{
 			&middleware.ProxyTarget{
 				URL: s.resourceHost,
 			},
 		},
-	}))
+	)))
 }
 
 func (s *GatewayServer) mountAuthenticateEndpoints() {
